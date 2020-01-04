@@ -9,25 +9,23 @@ public static class ProductFactory
     /// </summary>
     /// <param name="productType"></param>
     /// <returns></returns>
-    public static IPlaceable CreateProduct(ProductType productType)
+    public static IBuildable CreateProduct(BuildingType productType)
     {
-        IPlaceable product = null;
+        IBuildable building = null;
         switch (productType)
         {
-            case ProductType.Barrack:
-                product = new Barracks();
+            case BuildingType.Barrack:
+                building = new Barracks(4, 4, "Barrack", new SoldierUnit());
                 break;
-            case ProductType.PowePlant:
-                product = new PowerPlants();
+            case BuildingType.PowePlant:
+                building = new PowerPlants();
                 break;
-            case ProductType.SoldierUnit:
-                product = new SoldierUnit();
-                break;
+
             default:
                 Debug.LogError("This type of product is not specified.");
                 break;
 
         }
-        return product;
+        return building;
     }
 }

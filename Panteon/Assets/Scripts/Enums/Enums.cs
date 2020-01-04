@@ -2,4 +2,4 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ProductType { Barrack = 0, PowePlant, SoldierUnit }
+public enum BuildingType { Barrack = 0, PowePlant }

@@ -12,6 +12,11 @@ public class PowerPlants : IBuildable
 
     public string ImageName => throw new System.NotImplementedException();
 
+    public void Place(int x, int y)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public void Place()
     {
         throw new System.NotImplementedException();

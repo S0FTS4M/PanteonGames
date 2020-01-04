@@ -4,17 +4,36 @@ using UnityEngine;
 
 public class Barracks : IBuildable, ICanProduce
 {
-    IPlaceable soldier;
+    IProduceable soldier;
 
-    public string Name => throw new System.NotImplementedException();
+    public Barracks(int xDim, int yDim, string name, IProduceable soldier)
+    {
+        this.soldier = soldier;
+        XDimension = xDim;
+        YDimension = yDim;
+        Name = name;
+    }
 
-    public int XDimension => throw new System.NotImplementedException();
+    public string Name
+    {
+        get; private set;
+    }
 
-    public int YDimension => throw new System.NotImplementedException();
+    public int XDimension
+    {
+        get; private set;
+    }
 
-    public string ImageName => throw new System.NotImplementedException();
+    public int YDimension
+    {
+        get; private set;
+    }
+    public string ImageName
+    {
+        get; private set;
+    }
 
-    public void Place()
+    public void Place(int x, int y)
     {
         throw new System.NotImplementedException();
     }
@@ -23,6 +42,7 @@ public class Barracks : IBuildable, ICanProduce
     {
         throw new System.NotImplementedException();
     }
+
 
 
 }

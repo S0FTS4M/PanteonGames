@@ -13,7 +13,7 @@ public class WorldController : MonoBehaviour
     public World World { get; private set; }
 
 
-    // Start is called before the first frame update
+
     void Awake()
     {
         World = new World();

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IPlaceable
+public interface IProduceable
 {
     int XDimension { get; }
     int YDimension { get; }
     string ImageName { get; }
 
-    void Place();
+
 }

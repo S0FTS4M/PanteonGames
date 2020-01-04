@@ -14,7 +14,14 @@ public class CameraController : MonoBehaviour
         int y = world.Height / 2;
 
         transform.position = new Vector3(x, y, transform.position.z);
+
+
     }
 
+    private void Update()
+    {
+        // transform.Translate(inputsForCam.GetDifference());
+        // Debug.Log(inputsForCam.GetDifference());
+    }
 
 }

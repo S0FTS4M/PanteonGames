@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoldierUnit : IPlaceable, IMoveable
+public class SoldierUnit : IProduceable, IMoveable
 {
     public int XDimension => throw new System.NotImplementedException();
 
