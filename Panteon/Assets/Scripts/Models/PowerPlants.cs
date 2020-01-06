@@ -1,16 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 public class PowerPlants : IBuildable
 {
-    public int XDimension => throw new System.NotImplementedException();
 
-    public int YDimension => throw new System.NotImplementedException();
-
-    public string Name => throw new System.NotImplementedException();
-
-    public string ImageName => throw new System.NotImplementedException();
+    public BuildingType Type => BuildingType.PowePlant;
 
     public void Place(int x, int y)
     {
@@ -21,4 +17,9 @@ public class PowerPlants : IBuildable
     {
         throw new System.NotImplementedException();
     }
+
+    public string Name { get; }
+    public int XDimension { get; }
+    public int YDimension { get; }
+    public string ImageName { get; }
 }

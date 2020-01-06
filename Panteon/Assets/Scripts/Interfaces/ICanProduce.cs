@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface ICanProduce
+﻿namespace Assets.Scripts.Interfaces
 {
-    IMoveable Produce();
+    public interface ICanProduce
+    {
+        IMoveable Produce();
+    }
 }

@@ -1,19 +1,25 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿
+using Assets.Scripts.Interfaces;
 
 public class Tile
 {
-    int x;
-    int y;
+    public int X { get; }
+    public int Y { get; }
 
     World world;
 
-    IProduceable placedUnit;
+    public IProducible PlacedUnit
+    {
+        get;
+        set;
+    }
+    public bool IsOccupied => PlacedUnit != null;
+
     public Tile(World world, int x, int y)
     {
         this.world = world;
-        this.x = x;
-        this.y = y;
+        this.X = x;
+        this.Y = y;
+
     }
 }

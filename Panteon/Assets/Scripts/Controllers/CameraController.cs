@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-
     // Start is called before the first frame update
     void Start()
     {
@@ -20,8 +19,7 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        // transform.Translate(inputsForCam.GetDifference());
-        // Debug.Log(inputsForCam.GetDifference());
+
     }
 
 }

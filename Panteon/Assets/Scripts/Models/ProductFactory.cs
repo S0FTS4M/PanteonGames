@@ -1,18 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-public static class ProductFactory
+public class ProductFactory : IFactory
 {
     /// <summary>
-    /// Creates a placeable object and returns that object. If specified type does not exists returns null.
+    /// Creates a building object and returns that object. If specified type does not exists returns null.
     /// </summary>
-    /// <param name="productType"></param>
+    /// <param name="buildingType"></param>
     /// <returns></returns>
-    public static IBuildable CreateProduct(BuildingType productType)
+    private static ProductFactory Instance;
+
+    public static IFactory getInstance()
+    {
+        if (Instance == null)
+            Instance = new ProductFactory();
+
+        return Instance;
+    }
+    public IBuildable Create(BuildingType buildingType)
     {
         IBuildable building = null;
-        switch (productType)
+        switch (buildingType)
         {
             case BuildingType.Barrack:
                 building = new Barracks(4, 4, "Barrack", new SoldierUnit());

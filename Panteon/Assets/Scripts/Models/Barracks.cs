@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 public class Barracks : IBuildable, ICanProduce
 {
-    IProduceable soldier;
+    IProducible soldier;
 
-    public Barracks(int xDim, int yDim, string name, IProduceable soldier)
+    public Barracks(int xDim, int yDim, string name, IProducible soldier)
     {
         this.soldier = soldier;
         XDimension = xDim;
@@ -32,6 +33,8 @@ public class Barracks : IBuildable, ICanProduce
     {
         get; private set;
     }
+
+    public BuildingType Type => BuildingType.Barrack;
 
     public void Place(int x, int y)
     {

@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class World
 {
+
     Tile[,] tiles;
 
     /// <summary>
@@ -45,12 +47,17 @@ public class World
     /// <returns>Tile object in that location. If x or y out of range returns null</returns>
     public Tile GetTileAt(int x, int y)
     {
-        if (x > Width || x < 0 || y > Height || y < 0)
+        if (x >= Width || x < 0 || y >= Height || y < 0)
         {
-            Debug.LogError("Tile (" + x + "," + y + ") is out of range.");
+            //   Debug.LogError("Tile (" + x + "," + y + ") is out of range.");
             return null;
         }
+        // Debug.Log($"{x},{y}");
         return tiles[x, y];
     }
+
+
+
+
 
 }

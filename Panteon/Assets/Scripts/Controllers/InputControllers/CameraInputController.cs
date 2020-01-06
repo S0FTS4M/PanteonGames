@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-public class CameraInputController : MonoBehaviour
+public class CameraInputController : MonoBehaviour, ICameraMoveInput
 {
+
+    public Vector3 MousePosDifference { get; private set; }
+
+    public bool Dragging { get; private set; }
+
     private Vector3 currFramePosition;
     private Vector3 lastFramePosition;
     bool isDragging = false;
@@ -38,7 +44,14 @@ public class CameraInputController : MonoBehaviour
 
             Vector3 diff = lastFramePosition - currFramePosition;
             Camera.main.transform.Translate(diff);
+            MousePosDifference = diff;
 
+
+            Dragging = true;
+        }
+        if (Input.GetMouseButtonUp(1))
+        {   //  Left Mouse Button up
+            Dragging = false;
         }
 
     }

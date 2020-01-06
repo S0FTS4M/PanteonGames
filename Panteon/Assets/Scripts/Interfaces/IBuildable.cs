@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface IBuildable : IProduceable
+﻿namespace Assets.Scripts.Interfaces
 {
-    string Name { get; }
+    public interface IBuildable : IProducible
+    {
 
-    void Place(int x, int y);
+        BuildingType Type { get; }
+        void Place(int x, int y);
+    }
 }

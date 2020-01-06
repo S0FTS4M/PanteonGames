@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-public class SoldierUnit : IProduceable, IMoveable
+public class SoldierUnit : IProducible, IMoveable
 {
+    public string Name { get; }
     public int XDimension => throw new System.NotImplementedException();
 
     public int YDimension => throw new System.NotImplementedException();

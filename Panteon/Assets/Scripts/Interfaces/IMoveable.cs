@@ -1,8 +1,9 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public interface IMoveable
+namespace Assets.Scripts.Interfaces
 {
-    IEnumerable Move(int x, int y);
+    public interface IMoveable
+    {
+        IEnumerable Move(int x, int y);
+    }
 }
