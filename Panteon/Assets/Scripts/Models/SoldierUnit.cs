@@ -5,12 +5,20 @@ using UnityEngine;
 
 public class SoldierUnit : IProducible, IMoveable
 {
+    public SoldierUnit(int xDim, int yDim, string name, string imageName)
+    {
+        XDimension = xDim;
+        YDimension = yDim;
+        Name = name;
+        ImageName = imageName;
+
+    }
     public string Name { get; }
-    public int XDimension => throw new System.NotImplementedException();
+    public int XDimension { get; }
+    public int YDimension { get; }
+    public string ImageName { get; }
+    public ProducibleType Type => ProducibleType.Soldier;
 
-    public int YDimension => throw new System.NotImplementedException();
-
-    public string ImageName => throw new System.NotImplementedException();
 
     public IEnumerable Move(int x, int y)
     {

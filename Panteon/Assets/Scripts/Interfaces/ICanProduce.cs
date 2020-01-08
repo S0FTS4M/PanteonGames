@@ -2,6 +2,7 @@
 {
     public interface ICanProduce
     {
+        IProducible producible { get; }
         IMoveable Produce();
     }
 }

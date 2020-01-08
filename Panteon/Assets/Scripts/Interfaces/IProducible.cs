@@ -6,6 +6,7 @@
         int XDimension { get; }
         int YDimension { get; }
         string ImageName { get; }
+        ProducibleType Type { get; }
 
 
     }

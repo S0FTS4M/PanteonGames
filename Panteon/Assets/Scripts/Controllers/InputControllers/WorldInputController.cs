@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.Scripts.Interfaces;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class WorldInputController : MonoBehaviour, IWorldInput
 {
@@ -24,9 +25,12 @@ public class WorldInputController : MonoBehaviour, IWorldInput
 
     private void Update()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        MouseX = Mathf.FloorToInt(mousePos.x + 0.5f);
-        MouseY = Mathf.FloorToInt(mousePos.y + 0.5f);
+        MouseX = Mathf.FloorToInt(mousePos.x);
+        MouseY = Mathf.FloorToInt(mousePos.y);
 
 
         //we only need to catch it one time

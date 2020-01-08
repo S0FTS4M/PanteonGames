@@ -6,7 +6,14 @@ using UnityEngine;
 public class PowerPlants : IBuildable
 {
 
-    public BuildingType Type => BuildingType.PowePlant;
+    public PowerPlants(int xDim, int yDim, string name, string imageName)
+    {
+        XDimension = xDim;
+        YDimension = yDim;
+        Name = name;
+        ImageName = imageName;
+    }
+    public ProducibleType Type => ProducibleType.PowerPlant;
 
     public void Place(int x, int y)
     {

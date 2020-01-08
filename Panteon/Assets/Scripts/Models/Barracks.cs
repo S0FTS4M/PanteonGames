@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class Barracks : IBuildable, ICanProduce
 {
-    IProducible soldier;
 
-    public Barracks(int xDim, int yDim, string name, IProducible soldier)
+    public Barracks(int xDim, int yDim, string name, string imageName, IProducible soldier)
     {
-        this.soldier = soldier;
+        this.producible = soldier;
         XDimension = xDim;
         YDimension = yDim;
         Name = name;
+        ImageName = imageName;
     }
 
     public string Name
@@ -34,12 +34,14 @@ public class Barracks : IBuildable, ICanProduce
         get; private set;
     }
 
-    public BuildingType Type => BuildingType.Barrack;
+    public ProducibleType Type => ProducibleType.Barrack;
 
     public void Place(int x, int y)
     {
         throw new System.NotImplementedException();
     }
+
+    public IProducible producible { get; }
 
     public IMoveable Produce()
     {

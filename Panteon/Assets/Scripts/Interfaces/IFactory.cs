@@ -2,6 +2,6 @@
 {
     public interface IFactory
     {
-        IBuildable Create(BuildingType buildingType);
+        IBuildable Create(ProducibleType producibleType);
     }
 }

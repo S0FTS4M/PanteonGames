@@ -15,12 +15,14 @@ public class WorldController : MonoBehaviour
     /// this will be working only when ever user wants to put a building to the map.
     /// this will show if it is possible to put buildings to a range of tiles
     /// </summary>
-    public static event Func<Tile, IBuildable, bool> OnHoverTile;
-    public static event Action<Tile, IBuildable> OnTileClicked;
+    public static event Func<Tile, bool> OnHoverTile;
+    public static event Action<Tile> OnTileClicked;
 
     public static WorldController Instance;
+    [SerializeField]
+    public ProducibleType producibleType;
 
-    public IBuildable selectedIbuildable = new Barracks(4, 4, "Barrack", new SoldierUnit());
+    public IProducible selectedProducible { get; private set; }
     bool? _canPlaceBuilding;
     IWorldInput _worldInput;
 
@@ -33,7 +35,7 @@ public class WorldController : MonoBehaviour
     Tile _currentTile;
 
 
-    void Awake()
+    void Start()
     {
         if (Instance != null)
         {
@@ -57,29 +59,59 @@ public class WorldController : MonoBehaviour
 
                 OnTileGoCreated?.Invoke(tile);
             }
+
         }
-    }
-
-    private void Start()
-    {
         _worldInput = GetComponent<IWorldInput>();
+        SetProducible(ProducibleType.None);
     }
 
+
+
+    public void SetProducible(ProducibleType producibleType)
+    {
+        ///TODO : Bu selectedbuildable konusunda tekrar düşünmem lazım product menuden sadece building bilgisi gönderilmeyecek
+        /// aynı zamanda pruducible bilgisi de gelecek
+
+        if (producibleType == ProducibleType.None)
+        {
+            BuildController.Instance.UnRegisterPlaceProducibleEvent();
+            InformationUIController.Instance.RegisterGetInfoEvent();
+            ProductsMenuUIController.Instance.RegisterGetInfoEvent();
+            selectedProducible = null;
+            return;
+        }
+        BuildController.Instance.RegisterPlaceProducibleEvent();
+        InformationUIController.Instance.UnRegisterGetInfoEvent();
+        ProductsMenuUIController.Instance.UnRegisterGetInfoEvent();
+        selectedProducible = Factory.GetFactoryOfType<ProductFactory>().Create(producibleType);
+
+    }
     // Update is called once per frame
     void Update()
     {
         // Debug.Log($"{worldInput.MouseX}, {worldInput.MouseY}");
         _currentTile = World.GetTileAt(_worldInput.MouseX, _worldInput.MouseY);
 
-        if (_worldInput.IsClicked == true && _canPlaceBuilding != null && _canPlaceBuilding == true)
+        if (_worldInput.IsClicked == true)
         {
-            OnTileClicked?.Invoke(_currentTile, selectedIbuildable);
+            //this means we are trying to place a building.
+            if (selectedProducible != null && _canPlaceBuilding != null && _canPlaceBuilding == true)
+            {
+                OnTileClicked?.Invoke(_currentTile);
+                SetProducible(ProducibleType.None);
+            }
+            else if (selectedProducible == null)
+            {
+                //otherwise (selectedProducible == null) we are getting info
+                OnTileClicked?.Invoke(_currentTile);
+            }
 
-            //selectedIbuildable = null;
+
         }
-        if (selectedIbuildable != null)
-            _canPlaceBuilding = OnHoverTile?.Invoke(_currentTile, selectedIbuildable);
+        if (selectedProducible != null)
+            _canPlaceBuilding = OnHoverTile?.Invoke(_currentTile);
     }
+    #region TileFuncs
     /// <summary>
     /// Yerleştirilebilir nesneler için alan seçiminde üzerinde bulunduğumuz tile base alınarak
     /// x sınırlarını belirler
@@ -194,4 +226,5 @@ public class WorldController : MonoBehaviour
 
         return tilesAvaliable;
     }
+    #endregion
 }

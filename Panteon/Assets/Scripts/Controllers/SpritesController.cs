@@ -5,18 +5,20 @@ using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 
-public class SpriteController : MonoBehaviour
+public class SpritesController : MonoBehaviour
 {
-    public static SpriteController Instance;
+    public static SpritesController Instance;
+
     [SerializeField]
     Sprite tileSprite;
+
     int say = 0;
     Tile oldHoveredTile;
     List<Tile> cachedTiles = new List<Tile>();
-
+    public Dictionary<string, Sprite> UnitNameToSpriteMap { get; private set; }
 
     // Start is called before the first frame update
-    void OnEnable()
+    void Awake()
     {
         if (Instance != null)
         {
@@ -26,37 +28,33 @@ public class SpriteController : MonoBehaviour
         }
 
         Instance = this;
+        UnitNameToSpriteMap = new Dictionary<string, Sprite>();
         WorldController.OnTileGoCreated += OnTileGOCreated;
         WorldController.OnHoverTile += WorldController_OnHoverTile;
-        WorldController.OnTileClicked += WorldController_OnTileClicked;
+        LoadSprites();
+        BuildController.OnProducibleGOCreated += OnProducibleGOCreated;
+
     }
 
-    //void LoadSprites()
-    //{
-    //    Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Buildings");
-    //    for (int i = 0; i < sprites.Length; i++)
-    //    {
-    //        Debug.Log(sprites[i].name);
-    //        BuildingNameToSpriteMap.Add(
-    //            sprites[i].name,
-    //            sprites[i]);
-    //    }
-    //}
-    private void WorldController_OnTileClicked(Tile tile, IBuildable building)
+    private void OnProducibleGOCreated(IProducible producible, object producibleGo)
     {
+        SpriteRenderer sp = ((GameObject)producibleGo).AddComponent<SpriteRenderer>();
+        sp.sortingOrder = 10;
+        sp.sprite = SpritesController.Instance.UnitNameToSpriteMap[producible.ImageName];
 
-        Border xBorders = WorldController.Instance.CalculateXBorders(tile.X, tile.Y, building.XDimension);
-        Border yBorders = WorldController.Instance.CalculateYBorders(tile.X, tile.Y, building.YDimension);
-        for (int x = xBorders.start; x <= xBorders.end; x++)
+    }
+
+    void LoadSprites()
+    {
+        Sprite[] sprites = Resources.LoadAll<Sprite>("Sprites/Buildings");
+        for (int i = 0; i < sprites.Length; i++)
         {
-            for (int y = yBorders.start; y <= yBorders.end; y++)
-            {
-                Tile currentTile = WorldController.Instance.World.GetTileAt(x, y);
-                GameObject tileGO = WorldController.Instance.TileToGoMap[currentTile];
-                tileGO.GetComponent<SpriteRenderer>().color = new Color(0, 0, 1);
-            }
+            UnitNameToSpriteMap.Add(
+                sprites[i].name,
+                sprites[i]);
         }
     }
+
 
     void ResetTiles()
     {
@@ -73,16 +71,17 @@ public class SpriteController : MonoBehaviour
         cachedTiles.Clear();
     }
 
-    private bool WorldController_OnHoverTile(Tile tile, IBuildable building)
+    private bool WorldController_OnHoverTile(Tile tile)
     {
+        IProducible producible = WorldController.Instance.selectedProducible;
         ResetTiles();
 
         if (tile == null)
             return false;
 
-        Border xBorders = WorldController.Instance.CalculateXBorders(tile.X, tile.Y, building.XDimension);
+        Border xBorders = WorldController.Instance.CalculateXBorders(tile.X, tile.Y, producible.XDimension);
 
-        Border yBorders = WorldController.Instance.CalculateYBorders(tile.X, tile.Y, building.YDimension);
+        Border yBorders = WorldController.Instance.CalculateYBorders(tile.X, tile.Y, producible.YDimension);
 
 
 
@@ -100,7 +99,7 @@ public class SpriteController : MonoBehaviour
             }
             Tile currentTile = activeTiles[i];
             GameObject tileGO = WorldController.Instance.TileToGoMap[currentTile];
-            tileGO.GetComponent<SpriteRenderer>().color = new Color(0.7f, 0, 0);
+            tileGO.GetComponent<SpriteRenderer>().color = new Color(1f, 0, 0);
             cachedTiles.Add(currentTile);
         }
         //yasaklı bir alan olduğunu tespit ettik false döndür
@@ -118,11 +117,6 @@ public class SpriteController : MonoBehaviour
 
 
         return true;
-    }
-
-    private void OnTileHover(Tile tile)
-    {
-
     }
 
     private void OnTileGOCreated(Tile tile)

@@ -12,8 +12,8 @@ public class Builder
         buildingFactory = factory;
     }
 
-    public IBuildable Build(BuildingType buildingType)
+    public IBuildable Build(ProducibleType producibleType)
     {
-        return buildingFactory.Create(buildingType);
+        return buildingFactory.Create(producibleType);
     }
 }

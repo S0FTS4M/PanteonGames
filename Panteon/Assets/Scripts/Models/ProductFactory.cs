@@ -8,27 +8,19 @@ public class ProductFactory : IFactory
     /// <summary>
     /// Creates a building object and returns that object. If specified type does not exists returns null.
     /// </summary>
-    /// <param name="buildingType"></param>
+    /// <param name="producibleType"></param>
     /// <returns></returns>
-    private static ProductFactory Instance;
-
-    public static IFactory getInstance()
-    {
-        if (Instance == null)
-            Instance = new ProductFactory();
-
-        return Instance;
-    }
-    public IBuildable Create(BuildingType buildingType)
+    public IBuildable Create(ProducibleType producibleType)
     {
         IBuildable building = null;
-        switch (buildingType)
+        switch (producibleType)
         {
-            case BuildingType.Barrack:
-                building = new Barracks(4, 4, "Barrack", new SoldierUnit());
+            case ProducibleType.Barrack:
+                building = new Barracks(4, 4, "Barrack", "Barrack",
+                    new SoldierUnit(1, 1, "Soldier Unit", "Soldier"));
                 break;
-            case BuildingType.PowePlant:
-                building = new PowerPlants();
+            case ProducibleType.PowerPlant:
+                building = new PowerPlants(2, 3, "Power Plant", "PowerPlant");
                 break;
 
             default:
