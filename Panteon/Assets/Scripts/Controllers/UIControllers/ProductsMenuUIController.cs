@@ -20,8 +20,6 @@ public class ProductsMenuUIController : MonoBehaviour
     //this maps the name of the producible objects to image name and type of the object 
     private Dictionary<string, UnitBase> _nameToObjectForButtons;
 
-    private Dictionary<string, Sprite> _unitSpriteNameToSpriteMap;
-
     private int _defaultButtonCount = 0;
     // Start is called before the first frame update
     void Awake()
@@ -34,7 +32,6 @@ public class ProductsMenuUIController : MonoBehaviour
 
         Instance = this;
         _nameToObjectForButtons = new Dictionary<string, UnitBase>();
-        _unitSpriteNameToSpriteMap = new Dictionary<string, Sprite>();
         //find every object inherited from StaticUnitBase and get the desired info from this types
         foreach (Type type in
             Assembly.GetAssembly(typeof(StaticUnitBase)).GetTypes()
@@ -45,7 +42,7 @@ public class ProductsMenuUIController : MonoBehaviour
                 unit);
 
         }
-        LoadSprites();
+
         CreateDefaultProductsPanel();
 
     }
@@ -99,21 +96,7 @@ public class ProductsMenuUIController : MonoBehaviour
         // LayoutRebuilder.ForceRebuildLayoutImmediate(_contentTransform as RectTransform);
 
     }
-    void LoadSprites()
-    {
 
-        SpriteAtlas spriteAtlas = Resources.Load<SpriteAtlas>("Sprites/Units");
-        Sprite[] sprites = new Sprite[spriteAtlas.spriteCount];
-        spriteAtlas.GetSprites(sprites);
-        for (int i = 0; i < sprites.Length; i++)
-        {
-            //Every sprite has a (Clone) extension because of the sprite atlas
-            _unitSpriteNameToSpriteMap.Add(
-                sprites[i].name.Replace("(Clone)", ""),
-                sprites[i]);
-
-        }
-    }
     void AddButtonToProductionMenu(UnitBase unit, UnityAction function)
     {
         GameObject spawned = SimplePool.Spawn(_buttonPrefab, Vector3.zero, Quaternion.identity);
@@ -121,7 +104,7 @@ public class ProductsMenuUIController : MonoBehaviour
         spawned.transform.localScale = new Vector3(1, 1, 1);
         spawned.GetComponentInChildren<TextMeshProUGUI>().text = unit.Name;
 
-        spawned.GetComponent<Image>().sprite = _unitSpriteNameToSpriteMap[unit.ImageName];
+        spawned.GetComponent<Image>().sprite = SpritesController.Instance.GetSpriteByName(unit.ImageName);
 
         Button btn = spawned.GetComponent<Button>();
         btn.onClick.RemoveAllListeners();

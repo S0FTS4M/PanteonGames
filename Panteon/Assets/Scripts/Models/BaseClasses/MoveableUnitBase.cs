@@ -57,7 +57,7 @@ public class MoveableUnitBase : UnitBase, ICloneable
                 if (_pathAStar.Length() == 0)
                 {
                     Debug.LogError("Path_AStar returned no path to destination!");
-
+                    _destTile = currTile;
                     _pathAStar = null;
                     return;
                 }

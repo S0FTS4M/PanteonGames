@@ -7,10 +7,7 @@ using UnityEngine;
 
 public class TilesSpritesController : MonoBehaviour
 {
-    public static TilesSpritesController Instance;
 
-    [SerializeField]
-    Sprite tileSprite;
 
     int say = 0;
     Tile oldHoveredTile;
@@ -21,18 +18,8 @@ public class TilesSpritesController : MonoBehaviour
     // Start is called before the first frame update
     void OnEnable()
     {
-        if (Instance != null)
-        {
-            Destroy(this.gameObject);
-            return;
-
-        }
-
-        Instance = this;
-
         Tile.OnTileCreated += OnTileCreated;
         Tile.OnHoverTile += WorldController_OnHoverTile;
-
 
     }
 
@@ -108,7 +95,7 @@ public class TilesSpritesController : MonoBehaviour
         tileGo.transform.position = new Vector3(tile.X, tile.Y, 0);
         WorldController.Instance.TileToGoMap.Add(tile, tileGo);
         SpriteRenderer tile_sr = tileGo.AddComponent<SpriteRenderer>();
-        tile_sr.sprite = tileSprite;
+        tile_sr.sprite = SpritesController.Instance.GetSpriteByName("Tile");
         tile_sr.sortingLayerName = "Tile";
 
     }

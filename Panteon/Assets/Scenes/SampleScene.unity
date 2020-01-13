@@ -825,6 +825,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1024489746}
+  - component: {fileID: 1024489750}
   - component: {fileID: 1024489749}
   - component: {fileID: 1024489748}
   - component: {fileID: 1024489747}
@@ -861,7 +862,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ce82f4f3ab20d4698ade1061e4408c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileSprite: {fileID: 21300000, guid: 89cc241b65ffaf64b987532aad8e6872, type: 3}
   gridParent: {fileID: 614119334}
 --- !u!114 &1024489748
 MonoBehaviour:
@@ -886,6 +886,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f93736028ed2d5d4b96a41039e24c95a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1024489750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1024489745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 436dc30db7c6bbd4f8b855cb60cb45a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1083073745

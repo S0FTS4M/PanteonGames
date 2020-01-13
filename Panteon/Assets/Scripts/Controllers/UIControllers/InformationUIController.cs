@@ -50,39 +50,27 @@ public class InformationUIController : MonoBehaviour
             InfoPanel.SetActive(true);
             unitNameTxt.text = tile.PlacedUnit.Name;
 
-            unitImage.sprite = (tile.PlacedUnit is MoveableUnitBase) == false ?
-                BuildingsSpriteController.Instance.GetBuildingSpriteByName(tile.PlacedUnit.ImageName) :
-                MoveableUnitSpriteController.Instance.GetMoveableSpriteByName(tile.PlacedUnit.ImageName);
-
-
+            unitImage.sprite = SpritesController.Instance.GetSpriteByName(tile.PlacedUnit.ImageName);
 
             if (tile.PlacedUnit is IProducer canProduce)
             {
                 ProducibleUnitPanel.SetActive(true);
-
-
                 //for every unitBase in the list create a image object
                 foreach (var producible in canProduce.MoveableUnitPrototypes)
                 {
-
                     ProducibleUnitPanel.GetComponentInChildren<TextMeshProUGUI>().text = producible.Name;
                     GameObject spawn = SimplePool.Spawn(_producibleGO, Vector3.zero, Quaternion.identity);
                     spawn.transform.SetParent(produciblesTransform);
 
                     spawn.transform.localScale = new Vector3(1, 1, 1);
 
-                    spawn.GetComponent<Image>().sprite = MoveableUnitSpriteController.Instance.GetMoveableSpriteByName(producible.ImageName);
-
+                    spawn.GetComponent<Image>().sprite = SpritesController.Instance.GetSpriteByName(producible.ImageName);
                 }
-
             }
             else
             {
-
                 ProducibleUnitPanel.SetActive(false);
-
             }
-
         }
         else
         {

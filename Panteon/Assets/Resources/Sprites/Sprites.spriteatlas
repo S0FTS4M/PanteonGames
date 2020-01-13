@@ -6,7 +6,7 @@ SpriteAtlas:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Buildings
+  m_Name: Sprites
   m_EditorData:
     serializedVersion: 2
     textureSettings:
@@ -23,7 +23,7 @@ SpriteAtlas:
     platformSettings:
     - serializedVersion: 2
       m_BuildTarget: DefaultTexturePlatform
-      m_MaxTextureSize: 256
+      m_MaxTextureSize: 512
       m_ResizeAlgorithm: 0
       m_TextureFormat: -1
       m_TextureCompression: 1
@@ -41,20 +41,26 @@ SpriteAtlas:
       enableTightPacking: 0
     variantMultiplier: 1
     packables:
-    - {fileID: 102900000, guid: 8447a83df354a264ca8b53f2a051696e, type: 3}
-    totalSpriteSurfaceArea: 28672
+    - {fileID: 102900000, guid: 8d16e746ec247fe41a33cd3bd0c79830, type: 3}
+    totalSpriteSurfaceArea: 31744
     bindAsDefault: 1
     storedHash:
       serializedVersion: 2
-      Hash: 6f0016d86e812ef3b68c703193c27a03
+      Hash: d41604be9c45ade809f275d054e338f6
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
+  - {fileID: 21300000, guid: 31ec9082e453f3d4ab627bd28d4d82e5, type: 3}
   - {fileID: 21300000, guid: ff06e5e382d536e4aaa87755d3717653, type: 3}
+  - {fileID: 21300000, guid: 94941a97ae0d2a849b4b8caed11d6d62, type: 3}
+  - {fileID: 21300000, guid: 89cc241b65ffaf64b987532aad8e6872, type: 3}
   - {fileID: 21300000, guid: 6cb6b2ee78ffe6a45a22d8b10ecf1bfa, type: 3}
   - {fileID: 21300000, guid: 6052805f479951847a310897cb03d444, type: 3}
   m_PackedSpriteNamesToIndex:
+  - Soldier
   - Barrack
+  - Camper
+  - Tile
   - Camp
   - PowerPlant
-  m_Tag: Buildings
+  m_Tag: Sprites
   m_IsVariant: 0
