@@ -1,11 +1,10 @@
-﻿using System;
-using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Camp : StaticUnitBase, IProducer
 {
-    private ISpawnPointSelector _spawnPointSelector;
+    private readonly ISpawnPointSelector _spawnPointSelector;
 
     public Camp() : base(UnitType.Camp)
     {
@@ -23,7 +22,8 @@ public class Camp : StaticUnitBase, IProducer
     public void SelectSpawnPoint(Border xBorders, Border yBorders)
     {
         SpawnPointTile = _spawnPointSelector.SelectSpawnPoint(xBorders, yBorders);
-        if (SpawnPointTile == null) { Debug.LogError("spawnpoint null geldi"); return; }
+        if (SpawnPointTile != null) return;
+        Debug.LogError("spawn point is null");
 
     }
 

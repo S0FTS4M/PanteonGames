@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public abstract class UnitBase
+﻿public abstract class UnitBase
 {
 
     protected UnitBase(UnitType unitType)
@@ -15,7 +10,7 @@ public abstract class UnitBase
     public int YDimension { get; set; }
     public string ImageName { get; set; }
     //Bottom Left corner tile as a pivot tile
-    public Tile PivotTile;
+    public Tile pivotTile;
     public UnitType Type { get; set; }
 
 

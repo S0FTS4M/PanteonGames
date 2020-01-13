@@ -41,48 +41,48 @@ public static class SimplePool
     // Note, you can also use Preload() to set the initial size
     // of a pool -- this can be handy if only some of your pools
     // are going to be exceptionally large (for example, your bullets.)
-    const int DEFAULT_POOL_SIZE = 3;
+    private const int DefaultPoolSıze = 3;
 
     /// <summary>
     /// The Pool class represents the pool for a particular prefab.
     /// </summary>
-    class Pool
+    private class Pool
     {
         // We append an id to the name of anything we instantiate.
         // This is purely cosmetic.
-        int nextId = 1;
+        private int _nextId = 1;
 
         // The structure containing our inactive objects.
         // Why a Stack and not a List? Because we'll never need to
         // pluck an object from the start or middle of the array.
         // We'll always just grab the last one, which eliminates
         // any need to shuffle the objects around in memory.
-        Stack<GameObject> inactive;
+        private readonly Stack<GameObject> _inactive;
 
         // The prefab that we are pooling
-        GameObject prefab;
+        readonly GameObject _prefab;
 
         // Constructor
         public Pool(GameObject prefab, int initialQty)
         {
-            this.prefab = prefab;
+            this._prefab = prefab;
 
             // If Stack uses a linked list internally, then this
             // whole initialQty thing is a placebo that we could
             // strip out for more minimal code. But it can't *hurt*.
-            inactive = new Stack<GameObject>(initialQty);
+            _inactive = new Stack<GameObject>(initialQty);
         }
 
         // Spawn an object from our pool
         public GameObject Spawn(Vector3 pos, Quaternion rot)
         {
             GameObject obj;
-            if (inactive.Count == 0)
+            if (_inactive.Count == 0)
             {
                 // We don't have an object in our pool, so we
                 // instantiate a whole new object.
-                obj = (GameObject)GameObject.Instantiate(prefab, pos, rot);
-                obj.name = prefab.name + " (" + (nextId++) + ")";
+                obj = (GameObject)GameObject.Instantiate(_prefab, pos, rot);
+                obj.name = _prefab.name + " (" + (_nextId++) + ")";
 
                 // Add a PoolMember component so we know what pool
                 // we belong to.
@@ -91,7 +91,7 @@ public static class SimplePool
             else
             {
                 // Grab the last object in the inactive array
-                obj = inactive.Pop();
+                obj = _inactive.Pop();
 
                 if (obj == null)
                 {
@@ -124,7 +124,7 @@ public static class SimplePool
             // On the other hand, it might simply be using a linked list 
             // internally.  But then, why does it allow us to specify a size
             // in the constructor? Maybe it's a placebo? Stack is weird.
-            inactive.Push(obj);
+            _inactive.Push(obj);
         }
 
     }
@@ -134,26 +134,26 @@ public static class SimplePool
     /// Added to freshly instantiated objects, so we can link back
     /// to the correct pool on despawn.
     /// </summary>
-    class PoolMember : MonoBehaviour
+    private class PoolMember : MonoBehaviour
     {
         public Pool myPool;
     }
 
     // All of our pools
-    static Dictionary<GameObject, Pool> pools;
+    private static Dictionary<GameObject, Pool> _pools;
 
     /// <summary>
     /// Initialize our dictionary.
     /// </summary>
-    static void Init(GameObject prefab = null, int qty = DEFAULT_POOL_SIZE)
+    static void Init(GameObject prefab = null, int qty = DefaultPoolSıze)
     {
-        if (pools == null)
+        if (_pools == null)
         {
-            pools = new Dictionary<GameObject, Pool>();
+            _pools = new Dictionary<GameObject, Pool>();
         }
-        if (prefab != null && pools.ContainsKey(prefab) == false)
+        if (prefab != null && _pools.ContainsKey(prefab) == false)
         {
-            pools[prefab] = new Pool(prefab, qty);
+            _pools[prefab] = new Pool(prefab, qty);
         }
     }
 
@@ -165,19 +165,19 @@ public static class SimplePool
     /// Spawn/Despawn sequence is going to be pretty darn quick and
     /// this avoids code duplication.
     /// </summary>
-    static public void Preload(GameObject prefab, int qty = 1)
+    public static void Preload(GameObject prefab, int qty = 1)
     {
         Init(prefab, qty);
 
         // Make an array to grab the objects we're about to pre-spawn.
-        GameObject[] obs = new GameObject[qty];
-        for (int i = 0; i < qty; i++)
+        var obs = new GameObject[qty];
+        for (var i = 0; i < qty; i++)
         {
             obs[i] = Spawn(prefab, Vector3.zero, Quaternion.identity);
         }
 
         // Now despawn them all.
-        for (int i = 0; i < qty; i++)
+        for (var i = 0; i < qty; i++)
         {
             Despawn(obs[i]);
         }
@@ -190,17 +190,17 @@ public static class SimplePool
     /// after spawning -- but remember that toggling IsActive will also
     /// call that function.
     /// </summary>
-    static public GameObject Spawn(GameObject prefab, Vector3 pos, Quaternion rot)
+    public static GameObject Spawn(GameObject prefab, Vector3 pos, Quaternion rot)
     {
         Init(prefab);
 
-        return pools[prefab].Spawn(pos, rot);
+        return _pools[prefab].Spawn(pos, rot);
     }
 
     /// <summary>
     /// Despawn the specified gameobject back into its pool.
     /// </summary>
-    static public void Despawn(GameObject obj)
+    public static void Despawn(GameObject obj)
     {
         PoolMember pm = obj.GetComponent<PoolMember>();
         if (pm == null)

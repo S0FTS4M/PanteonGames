@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Interfaces;
-using TMPro;
+﻿using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 public class BuildController : MonoBehaviour
 {
-    public static BuildController Instance;
+    public static BuildController instance;
     // Start is called before the first frame update
     void Awake()
     {
-        if (Instance != null)
+        if (instance != null)
         {
             Destroy(this.gameObject);
             return;
         }
 
-        Instance = this;
+        instance = this;
 
     }
 
@@ -32,15 +28,15 @@ public class BuildController : MonoBehaviour
 
     }
     //When ever player activates place unit action we need to start listening for click events on valid tiles
-    private void PlaceProducible_OnTileClicked(Tile tile)
+    private static void PlaceProducible_OnTileClicked(Tile tile)
     {
-        World world = WorldController.Instance.World;
-        StaticUnitBase staticUnitBase = (StaticUnitBase)WorldController.Instance.SelectedUnitForPlacing;
+        var world = WorldController.instance.World;
+        var staticUnitBase = (StaticUnitBase)WorldController.instance.SelectedUnitForPlacing;
 
-        Border xBorders = world.CalculateXBorders(tile, staticUnitBase.XDimension);
-        Border yBorders = world.CalculateYBorders(tile, staticUnitBase.YDimension);
+        var xBorders = world.CalculateXBorders(tile, staticUnitBase.XDimension);
+        var yBorders = world.CalculateYBorders(tile, staticUnitBase.YDimension);
 
-        staticUnitBase.PivotTile = WorldController.Instance.World.GetTileAt(xBorders.start, yBorders.start);
+        staticUnitBase.pivotTile = WorldController.instance.World.GetTileAt(xBorders.start, yBorders.start);
 
         staticUnitBase.PlaceUnit(world);
 
@@ -49,12 +45,6 @@ public class BuildController : MonoBehaviour
         {
             producer.SelectSpawnPoint(xBorders, yBorders);
         }
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
 
     }
 }

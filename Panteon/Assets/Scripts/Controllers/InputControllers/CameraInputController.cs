@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 public class CameraInputController : MonoBehaviour, ICameraMoveInput
@@ -11,29 +8,21 @@ public class CameraInputController : MonoBehaviour, ICameraMoveInput
 
     public bool Dragging { get; private set; }
 
-    private Vector3 currFramePosition;
-    private Vector3 lastFramePosition;
-    bool isDragging = false;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
+    private Vector3 _currentFramePosition;
+    private Vector3 _lastFramePosition;
 
     // Update is called once per frame
     void Update()
     {
-        currFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        currFramePosition.z = 0;
-
+        _currentFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _currentFramePosition.z = 0;
 
         UpdateCameraMovement();
 
         // Save the mouse position from this frame
         // We don't use currFramePosition because we may have moved the camera.
-        lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        lastFramePosition.z = 0;
+        _lastFramePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _lastFramePosition.z = 0;
     }
 
     private void UpdateCameraMovement()
@@ -41,8 +30,7 @@ public class CameraInputController : MonoBehaviour, ICameraMoveInput
 
         if (Input.GetMouseButton(1))
         {   //  Left Mouse Button
-
-            Vector3 diff = lastFramePosition - currFramePosition;
+            var diff = _lastFramePosition - _currentFramePosition;
             Camera.main.transform.Translate(diff);
             MousePosDifference = diff;
 

@@ -1,17 +1,11 @@
-﻿using System.Collections;
+﻿using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
-using Assets.Scripts.Interfaces;
 using UnityEngine;
-using UnityEngine.U2D;
 
 public class MoveableUnitSpriteController : MonoBehaviour
 {
     Dictionary<MoveableUnitBase, GameObject> _moveableToGoMap;
 
-    World world
-    {
-        get { return WorldController.Instance.World; }
-    }
     // Start is called before the first frame update
     void Start()
     {
@@ -22,17 +16,17 @@ public class MoveableUnitSpriteController : MonoBehaviour
 
     public void OnMoveableUnitCreated(MoveableUnitBase moveableUnit)
     {
-        Tile selectedTile = WorldController.Instance.SelectedTileForInfo;
+        var selectedTile = WorldController.instance.SelectedTileForInfo;
         moveableUnit.SetTile(((IProducer)selectedTile.PlacedUnit).SpawnPointTile);
-        moveableUnit.currTile.SetUnit(moveableUnit);
-        GameObject moveable_go = new GameObject(moveableUnit.Name);
+        moveableUnit.CurrentTile.SetUnit(moveableUnit);
+        var moveableGo = new GameObject(moveableUnit.Name);
 
-        _moveableToGoMap.Add(moveableUnit, moveable_go);
-        moveable_go.transform.position = new Vector3(moveableUnit.X, moveableUnit.Y, 0);
-        moveable_go.transform.SetParent(this.transform, true);
+        _moveableToGoMap.Add(moveableUnit, moveableGo);
+        moveableGo.transform.position = new Vector3(moveableUnit.X, moveableUnit.Y, 0);
+        moveableGo.transform.SetParent(this.transform, true);
 
-        SpriteRenderer sr = moveable_go.AddComponent<SpriteRenderer>();
-        sr.sprite = SpritesController.Instance.GetSpriteByName(moveableUnit.ImageName);
+        var sr = moveableGo.AddComponent<SpriteRenderer>();
+        sr.sprite = SpritesController.instance.GetSpriteByName(moveableUnit.ImageName);
         sr.sortingLayerName = "Moveables";
 
 
@@ -49,10 +43,10 @@ public class MoveableUnitSpriteController : MonoBehaviour
             return;
         }
 
-        GameObject char_go = _moveableToGoMap[moveableUnit];
+        var charGo = _moveableToGoMap[moveableUnit];
 
 
-        char_go.transform.position = new Vector3(moveableUnit.X, moveableUnit.Y, 0);
+        charGo.transform.position = new Vector3(moveableUnit.X, moveableUnit.Y, 0);
     }
 
 }

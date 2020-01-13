@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MoveableUnitBase : UnitBase, ICloneable
 {
     public static event Action<MoveableUnitBase> OnMoveableUnitCreated;
     public event Action<MoveableUnitBase> OnUnitMove;
-    public float X => Mathf.Lerp(currTile.X, _nextTile.X, _movementPercentage);
+    public float X => Mathf.Lerp(CurrentTile.X, _nextTile.X, _movementPercentage);
 
-    public float Y => Mathf.Lerp(currTile.Y, _nextTile.Y, _movementPercentage);
+    public float Y => Mathf.Lerp(CurrentTile.Y, _nextTile.Y, _movementPercentage);
 
-    public Tile currTile
+    public Tile CurrentTile
     {
         get; protected set;
     }
@@ -28,7 +26,7 @@ public class MoveableUnitBase : UnitBase, ICloneable
 
     public void SetTile(Tile tile)
     {
-        currTile = _destTile = _nextTile = tile;
+        CurrentTile = _destTile = _nextTile = tile;
 
     }
     public object Clone()
@@ -39,25 +37,25 @@ public class MoveableUnitBase : UnitBase, ICloneable
     }
     void Update_DoMovement(float deltaTime)
     {
-        if (currTile == _destTile)
+        if (CurrentTile == _destTile)
         {
-            currTile.SetUnit(this);
+            CurrentTile.SetUnit(this);
             _pathAStar = null;
             return; // We're already were we want to be.
         }
 
-        if (_nextTile == null || _nextTile == currTile)
+        if (_nextTile == null || _nextTile == CurrentTile)
         {
             // Get the next tile from the pathfinder.
             if (_pathAStar == null || _pathAStar.Length() == 0)
             {
                 // Generate a path to our destination
-                currTile.SetUnit(null);
-                _pathAStar = new Path_AStar(currTile.world, currTile, _destTile); // This will calculate a path from curr to dest.
+                CurrentTile.SetUnit(null);
+                _pathAStar = new Path_AStar(CurrentTile.World, CurrentTile, _destTile); // This will calculate a path from curr to dest.
                 if (_pathAStar.Length() == 0)
                 {
                     Debug.LogError("Path_AStar returned no path to destination!");
-                    _destTile = currTile;
+                    _destTile = CurrentTile;
                     _pathAStar = null;
                     return;
                 }
@@ -69,8 +67,8 @@ public class MoveableUnitBase : UnitBase, ICloneable
         }
 
         float distToTravel = Mathf.Sqrt(
-            Mathf.Pow(currTile.X - _nextTile.X, 2) +
-            Mathf.Pow(currTile.Y - _nextTile.Y, 2)
+            Mathf.Pow(CurrentTile.X - _nextTile.X, 2) +
+            Mathf.Pow(CurrentTile.Y - _nextTile.Y, 2)
         );
         // How much distance can be travel this Update?
         float distThisFrame = Speed * deltaTime;
@@ -88,7 +86,7 @@ public class MoveableUnitBase : UnitBase, ICloneable
             //       If there are no more tiles, then we have TRULY
             //       reached our destination.
 
-            currTile = _nextTile;
+            CurrentTile = _nextTile;
             _movementPercentage = 0;
 
         }

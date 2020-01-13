@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class World
 {
-
-    Tile[,] tiles;
+    private readonly Tile[,] _tiles;
 
     /// <summary>
     /// width of the world
     /// </summary>
-    int width;
+    private int _width;
 
     /// <summary>
     /// height of the world
     /// </summary>
-    int height;
+    private int _height;
 
     public Path_TileGraph tileGraph;
     public World(int width = 30, int height = 30)
     {
-        this.width = width;
-        this.height = height;
+        this._width = width;
+        this._height = height;
 
         //Create Tiles ( this is the only place where all tiles are created)
-        tiles = new Tile[this.width, this.height];
+        _tiles = new Tile[this._width, this._height];
 
-        for (int x = 0; x < this.width; x++)
+        for (int x = 0; x < this._width; x++)
         {
-            for (int y = 0; y < this.height; y++)
+            for (int y = 0; y < this._height; y++)
             {
-                tiles[x, y] = new Tile(this, x, y);
+                _tiles[x, y] = new Tile(this, x, y);
             }
         }
     }
@@ -42,8 +38,8 @@ public class World
     {
         tileGraph = null;
     }
-    public int Width { get => width; private set => width = value; }
-    public int Height { get => height; private set => height = value; }
+    public int Width => _width;
+    public int Height => _height;
 
     /// <summary>
     /// returns the tile with specific location.
@@ -59,16 +55,16 @@ public class World
             return null;
         }
         // Debug.Log($"{x},{y}");
-        return tiles[x, y];
+        return _tiles[x, y];
     }
     public List<Tile> GetTilesInSelectedArea(Border xBorder, Border yBorder)
     {
-        List<Tile> tilesAvailable = new List<Tile>();
-        for (int x = xBorder.start; x <= xBorder.end; x++)
+        var tilesAvailable = new List<Tile>();
+        for (var x = xBorder.start; x <= xBorder.end; x++)
         {
-            for (int y = yBorder.start; y <= yBorder.end; y++)
+            for (var y = yBorder.start; y <= yBorder.end; y++)
             {
-                Tile currentTile = GetTileAt(x, y);
+                var currentTile = GetTileAt(x, y);
                 tilesAvailable.Add(currentTile);
             }
         }

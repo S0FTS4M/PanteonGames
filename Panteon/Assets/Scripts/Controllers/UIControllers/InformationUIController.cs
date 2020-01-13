@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,7 +48,7 @@ public class InformationUIController : MonoBehaviour
             InfoPanel.SetActive(true);
             unitNameTxt.text = tile.PlacedUnit.Name;
 
-            unitImage.sprite = SpritesController.Instance.GetSpriteByName(tile.PlacedUnit.ImageName);
+            unitImage.sprite = SpritesController.instance.GetSpriteByName(tile.PlacedUnit.ImageName);
 
             if (tile.PlacedUnit is IProducer canProduce)
             {
@@ -64,7 +62,7 @@ public class InformationUIController : MonoBehaviour
 
                     spawn.transform.localScale = new Vector3(1, 1, 1);
 
-                    spawn.GetComponent<Image>().sprite = SpritesController.Instance.GetSpriteByName(producible.ImageName);
+                    spawn.GetComponent<Image>().sprite = SpritesController.instance.GetSpriteByName(producible.ImageName);
                 }
             }
             else

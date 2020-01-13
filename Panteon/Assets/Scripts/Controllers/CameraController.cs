@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
@@ -8,7 +6,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         //Reposition the camera right in to the middle of the world
-        World world = WorldController.Instance.World;
+        World world = WorldController.instance.World;
         int x = world.Width / 2;
         int y = world.Height / 2;
 

@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using LetterboxCamera;
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace LetterboxCamera
 {
@@ -36,19 +35,21 @@ namespace LetterboxCamera
 
         [HideInInspector]
         public Vector2 vectorAnchor;
-        private Rect originViewPort;
+        private Rect _originViewPort;
 
-        public CameraRatio (Camera _camera, Vector2 _anchor) {
-            camera = _camera;
-            vectorAnchor = _anchor;
-            originViewPort = camera.rect;
+        public CameraRatio(Camera camera, Vector2 anchor)
+        {
+            this.camera = camera;
+            vectorAnchor = anchor;
+            _originViewPort = this.camera.rect;
         }
 
         /// <summary>
         /// Sets the Camera's current Viewport as the viewport measurements to fill on resizing
         /// </summary>
-        public void ResetOriginViewport () {
-            originViewPort = camera.rect;
+        public void ResetOriginViewport()
+        {
+            _originViewPort = camera.rect;
             SetAnchorBasedOnEnum(anchor);
         }
 
@@ -56,8 +57,10 @@ namespace LetterboxCamera
         /// Sets the Anchor for this Camera when it is resized based on a given enum description
         /// </summary>
         /// <param name="_anchor"></param>
-        public void SetAnchorBasedOnEnum (CameraAnchor _anchor) {
-            switch (_anchor) {
+        public void SetAnchorBasedOnEnum(CameraAnchor _anchor)
+        {
+            switch (_anchor)
+            {
                 case CameraAnchor.Center:
                     vectorAnchor = new Vector2(0.5f, 0.5f);
                     break;
@@ -94,16 +97,20 @@ namespace LetterboxCamera
         /// </summary>
         /// <param name="_targetAspect"></param>
         /// <param name="_currentAspect"></param>
-        public void CalculateAndSetCameraRatio (float _width, float _height, bool _horizontalLetterbox) {
+        public void CalculateAndSetCameraRatio(float _width, float _height, bool _horizontalLetterbox)
+        {
 
             Rect localViewPort = new Rect();
 
             // Force the viewport to a width and height accurate to the target ratio
-            if (_horizontalLetterbox) { // current aspect is wider than target aspect so shorten down height of the viewport
+            if (_horizontalLetterbox)
+            { // current aspect is wider than target aspect so shorten down height of the viewport
                 localViewPort.height = _height;
                 localViewPort.width = 1;
 
-            } else { // current aspect is taller than target aspect so thin down width of the viewport
+            }
+            else
+            { // current aspect is taller than target aspect so thin down width of the viewport
                 localViewPort.height = 1f;
                 localViewPort.width = _width;
             }
@@ -113,27 +120,36 @@ namespace LetterboxCamera
             Rect screenViewPortVertical = new Rect();
 
             // Calculate both a horizontally and vertically resized viewport
-            screenViewPortHorizontal.width = originViewPort.width;
-            screenViewPortHorizontal.height = originViewPort.width * (localViewPort.height / localViewPort.width);
-            screenViewPortHorizontal.x = originViewPort.x;
-            screenViewPortHorizontal.y = Mathf.Lerp(originViewPort.y, originViewPort.y + (originViewPort.height - screenViewPortHorizontal.height), vectorAnchor.y);
+            screenViewPortHorizontal.width = _originViewPort.width;
+            screenViewPortHorizontal.height = _originViewPort.width * (localViewPort.height / localViewPort.width);
+            screenViewPortHorizontal.x = _originViewPort.x;
+            screenViewPortHorizontal.y = Mathf.Lerp(_originViewPort.y, _originViewPort.y + (_originViewPort.height - screenViewPortHorizontal.height), vectorAnchor.y);
 
-            screenViewPortVertical.width = originViewPort.height * (localViewPort.width / localViewPort.height);
-            screenViewPortVertical.height = originViewPort.height;
-            screenViewPortVertical.x = Mathf.Lerp(originViewPort.x, originViewPort.x + (originViewPort.width - screenViewPortVertical.width), vectorAnchor.x);
-            screenViewPortVertical.y = originViewPort.y;
+            screenViewPortVertical.width = _originViewPort.height * (localViewPort.width / localViewPort.height);
+            screenViewPortVertical.height = _originViewPort.height;
+            screenViewPortVertical.x = Mathf.Lerp(_originViewPort.x, _originViewPort.x + (_originViewPort.width - screenViewPortVertical.width), vectorAnchor.x);
+            screenViewPortVertical.y = _originViewPort.y;
 
             // Use the best fitting of the two
-            if (screenViewPortHorizontal.height >= screenViewPortVertical.height && screenViewPortHorizontal.width >= screenViewPortVertical.width) {
-                if (screenViewPortHorizontal.height <= originViewPort.height && screenViewPortHorizontal.width <= originViewPort.width) {
+            if (screenViewPortHorizontal.height >= screenViewPortVertical.height && screenViewPortHorizontal.width >= screenViewPortVertical.width)
+            {
+                if (screenViewPortHorizontal.height <= _originViewPort.height && screenViewPortHorizontal.width <= _originViewPort.width)
+                {
                     camera.rect = screenViewPortHorizontal;
-                } else {
+                }
+                else
+                {
                     camera.rect = screenViewPortVertical;
                 }
-            } else {
-                if (screenViewPortVertical.height <= originViewPort.height && screenViewPortVertical.width <= originViewPort.width) {
+            }
+            else
+            {
+                if (screenViewPortVertical.height <= _originViewPort.height && screenViewPortVertical.width <= _originViewPort.width)
+                {
                     camera.rect = screenViewPortVertical;
-                } else {
+                }
+                else
+                {
                     camera.rect = screenViewPortHorizontal;
                 }
             }
@@ -155,23 +171,29 @@ namespace LetterboxCamera
 
         public Camera letterBoxCamera;
 
-        private void Start () {
+        private void Start()
+        {
             // If no cameras have been assigned in editor, search for cameras in the scene
-            if (findCamerasAutomatically) {
+            if (findCamerasAutomatically)
+            {
                 FindAllCamerasInScene();
-            } else if (cameras == null || cameras.Count == 0) {
+            }
+            else if (cameras == null || cameras.Count == 0)
+            {
                 cameras = new List<CameraRatio>();
             }
 
             ValidateCameraArray();
 
             // Set the origin viewport space for each Camera
-            for (int i = 0; i < cameras.Count; i++) {
-                cameras[i].ResetOriginViewport();
+            foreach (var cams in cameras)
+            {
+                cams.ResetOriginViewport();
             }
 
             // If requested, a Camera will be generated that renders a letter box Color
-            if (createCameraForLetterBoxRendering) {
+            if (createCameraForLetterBoxRendering)
+            {
                 letterBoxCamera = new GameObject().AddComponent<Camera>();
                 letterBoxCamera.backgroundColor = letterBoxCameraColor;
                 letterBoxCamera.cullingMask = 0;
@@ -182,23 +204,26 @@ namespace LetterboxCamera
                 letterBoxCamera.clearFlags = CameraClearFlags.Color;
                 letterBoxCamera.name = "Letter Box Camera";
 
-                for (int i = 0; i < cameras.Count; i++) {
-                    if (cameras[i].camera.depth == -100) {
-                        Debug.LogError(cameras[i].camera.name + " has a depth of -100 and may conflict with the Letter Box Camera in Forced Camera Ratio!");
-                    }
+                foreach (var cams in cameras.Where(cams => cams.camera.depth == -100))
+                {
+                    Debug.LogError(cams.camera.name + " has a depth of -100 and may conflict with the Letter Box Camera in Forced Camera Ratio!");
                 }
             }
 
-            if (forceRatioOnAwake) {
+            if (forceRatioOnAwake)
+            {
                 CalculateAndSetAllCameraRatios();
             }
         }
 
-        private void Update () {
-            if (listenForWindowChanges) {
+        private void Update()
+        {
+            if (listenForWindowChanges)
+            {
                 // Recalculate the viewport size if the window size has changed
                 CalculateAndSetAllCameraRatios();
-                if (letterBoxCamera != null) {
+                if (letterBoxCamera != null)
+                {
                     letterBoxCamera.backgroundColor = letterBoxCameraColor;
                 }
             }
@@ -210,26 +235,20 @@ namespace LetterboxCamera
         /// </summary>
         /// <param name="_camera"></param>
         /// <returns></returns>
-        private CameraRatio GetCameraRatioByCamera (Camera _camera) {
-            if (cameras == null) {
-                return null;
-            }
-
-            for (int i = 0; i < cameras.Count; i++) {
-                if (cameras[i] != null && cameras[i].camera == _camera) {
-                    return cameras[i];
-                }
-            }
-
-            return null;
+        private CameraRatio GetCameraRatioByCamera(Camera _camera)
+        {
+            return cameras?.FirstOrDefault(cams => cams != null && cams.camera == _camera);
         }
 
         /// <summary>
         /// Removes any null elements from the CameraRatio Array
         /// </summary>
-        private void ValidateCameraArray() {
-            for (int i = cameras.Count - 1; i >= 0; i--) {
-                if (cameras[i].camera == null) {
+        private void ValidateCameraArray()
+        {
+            for (var i = cameras.Count - 1; i >= 0; i--)
+            {
+                if (cameras[i].camera == null)
+                {
                     cameras.RemoveAt(i);
                 }
             }
@@ -238,13 +257,16 @@ namespace LetterboxCamera
         /// <summary>
         /// Populates the tracked Camera Array with every Camera currently in the scene
         /// </summary>
-        public void FindAllCamerasInScene () {
-            Camera[] allCameras = FindObjectsOfType<Camera>();
+        public void FindAllCamerasInScene()
+        {
+            var allCameras = FindObjectsOfType<Camera>();
             cameras = new List<CameraRatio>();
 
-            for (int i = 0; i < allCameras.Length; i++) {
-                if ((createCameraForLetterBoxRendering || allCameras[i] != letterBoxCamera)) { // Ignore the Custom LetterBox Camera
-                    cameras.Add(new CameraRatio(allCameras[i], new Vector2(0.5f, 0.5f)));
+            foreach (var cams in allCameras)
+            {
+                if ((createCameraForLetterBoxRendering || cams != letterBoxCamera))
+                { // Ignore the Custom LetterBox Camera
+                    cameras.Add(new CameraRatio(cams, new Vector2(0.5f, 0.5f)));
                 }
             }
         }
@@ -254,21 +276,24 @@ namespace LetterboxCamera
         /// Forces each camera to render at a given ratio
         /// Creates a letter box effect if the new viewport does not match the current Window ratio
         /// </summary>
-        public void CalculateAndSetAllCameraRatios () {
-            float targetAspect = ratio.x / ratio.y;
-            float currentAspect = ((float)Screen.width) / ((float)Screen.height);
+        public void CalculateAndSetAllCameraRatios()
+        {
+            var targetAspect = ratio.x / ratio.y;
+            var currentAspect = ((float)Screen.width) / ((float)Screen.height);
 
-            bool horizontalLetterbox = false;
-            float fullWidth = targetAspect / currentAspect;
-            float fullHeight = currentAspect / targetAspect;
+            var horizontalLetterbox = false;
+            var fullWidth = targetAspect / currentAspect;
+            var fullHeight = currentAspect / targetAspect;
 
-            if (currentAspect > targetAspect) {
+            if (currentAspect > targetAspect)
+            {
                 horizontalLetterbox = false;
             }
 
-            for (int i = 0; i < cameras.Count; i++) {
-                cameras[i].SetAnchorBasedOnEnum(cameras[i].anchor);
-                cameras[i].CalculateAndSetCameraRatio(fullWidth, fullHeight, horizontalLetterbox);
+            foreach (var cam in cameras)
+            {
+                cam.SetAnchorBasedOnEnum(cam.anchor);
+                cam.CalculateAndSetCameraRatio(fullWidth, fullHeight, horizontalLetterbox);
             }
         }
 
@@ -277,15 +302,19 @@ namespace LetterboxCamera
         /// </summary>
         /// <param name="_camera"></param>
         /// <param name="_anchor"></param>
-        public void SetCameraAnchor (Camera _camera, Vector2 _anchor) {
-            CameraRatio camera = GetCameraRatioByCamera(_camera);
-            if (camera != null) {
-                camera.vectorAnchor = _anchor;
+        public void SetCameraAnchor(Camera _camera, Vector2 _anchor)
+        {
+            var cameraRatio = GetCameraRatioByCamera(_camera);
+            if (cameraRatio != null)
+            {
+                cameraRatio.vectorAnchor = _anchor;
             }
         }
 
-        public CameraRatio[] GetCameras () {
-            if (cameras == null) {
+        public CameraRatio[] GetCameras()
+        {
+            if (cameras == null)
+            {
                 cameras = new List<CameraRatio>();
             }
             return cameras.ToArray();

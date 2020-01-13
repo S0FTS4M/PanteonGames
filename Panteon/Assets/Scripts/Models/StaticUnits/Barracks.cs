@@ -1,5 +1,4 @@
-﻿using System;
-using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,7 +24,10 @@ public class Barracks : StaticUnitBase, IProducer
     public void SelectSpawnPoint(Border xBorders, Border yBorders)
     {
         SpawnPointTile = _spawnPointSelector.SelectSpawnPoint(xBorders, yBorders);
-        if (SpawnPointTile == null) { Debug.LogError("spawnpoint null geldi"); return; }
+        if (SpawnPointTile == null)
+        {
+            Debug.LogError("spawn point is null");
+        }
 
     }
 

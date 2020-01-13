@@ -1,17 +1,12 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.U2D;
+﻿using UnityEngine;
 
 public class BuildingsSpriteController : MonoBehaviour
 {
 
     //for every static unit we create needs to be a child of an object 
     [SerializeField]
-    private Transform buildingsParent;
-    World world
-    {
-        get { return WorldController.Instance.World; }
-    }
+    private Transform _buildingsParent;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,16 +15,13 @@ public class BuildingsSpriteController : MonoBehaviour
 
     public void OnBuildingCreated(UnitBase unit)
     {
-        GameObject producibleGo = new GameObject(unit.Name);
-        producibleGo.transform.SetParent(buildingsParent);
-        producibleGo.transform.position = new Vector3(unit.PivotTile.X, unit.PivotTile.Y, 0);
+        var producibleGo = new GameObject(unit.Name);
+        producibleGo.transform.SetParent(_buildingsParent);
+        producibleGo.transform.position = new Vector3(unit.pivotTile.X, unit.pivotTile.Y, 0);
 
-        SpriteRenderer sr = ((GameObject)producibleGo).AddComponent<SpriteRenderer>();
+        var sr = ((GameObject)producibleGo).AddComponent<SpriteRenderer>();
         sr.sortingLayerName = "Buildings";
-        sr.sprite = SpritesController.Instance.GetSpriteByName(unit.ImageName);
-
-
-
+        sr.sprite = SpritesController.instance.GetSpriteByName(unit.ImageName);
     }
 
 

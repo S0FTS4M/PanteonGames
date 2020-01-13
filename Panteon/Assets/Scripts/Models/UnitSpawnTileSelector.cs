@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Interfaces;
-using UnityEngine;
-
-public class UnitSpawnTileSelector : ISpawnPointSelector
+﻿public class UnitSpawnTileSelector : ISpawnPointSelector
 {
 
     public Tile SelectSpawnPoint(Border xBorders, Border yBorders)
@@ -12,7 +7,7 @@ public class UnitSpawnTileSelector : ISpawnPointSelector
         {
             for (int j = yBorders.start - 1; j <= yBorders.end + 1; j++)
             {
-                Tile tile = WorldController.Instance.World.GetTileAt(i, j);
+                Tile tile = WorldController.instance.World.GetTileAt(i, j);
                 if (tile?.IsOccupied == false)
                 {
                     tile.IsSpawnPoint = true;

@@ -9,9 +9,9 @@ public abstract class StaticUnitBase : UnitBase, IPlaceable
 
     public void PlaceUnit(World world)
     {
-        for (int x = PivotTile.X; x < PivotTile.X + XDimension; x++)
+        for (int x = pivotTile.X; x < pivotTile.X + XDimension; x++)
         {
-            for (int y = PivotTile.Y; y < PivotTile.Y + YDimension; y++)
+            for (int y = pivotTile.Y; y < pivotTile.Y + YDimension; y++)
             {
                 Tile currentTile = world.GetTileAt(x, y);
                 currentTile.SetUnit(this);

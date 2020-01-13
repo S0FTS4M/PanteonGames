@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
-using Assets.Scripts.Interfaces;
 using UnityEngine;
 
 public class WorldController : MonoBehaviour
 {
-    public static WorldController Instance;
+    public static WorldController instance;
     public List<MoveableUnitBase> moveables;
     public UnitBase SelectedUnitForPlacing { get; private set; }
     public Tile SelectedTileForInfo { get; private set; }
@@ -20,12 +18,12 @@ public class WorldController : MonoBehaviour
     Tile _currentHoveredTile;
     void Awake()
     {
-        if (Instance != null)
+        if (instance != null)
         {
             Destroy(this.gameObject);
             return;
         }
-        Instance = this;
+        instance = this;
 
         TileToGoMap = new Dictionary<Tile, GameObject>();
         moveables = new List<MoveableUnitBase>();
@@ -56,7 +54,7 @@ public class WorldController : MonoBehaviour
         {
             //Unregister all events so we dont need to consider every time what to unregister
             //and what to register
-            BuildController.Instance.UnRegisterPlaceUnitEvent();
+            BuildController.instance.UnRegisterPlaceUnitEvent();
             InformationUIController.Instance.UnRegisterGetInfoEvent();
             ProductsMenuUIController.Instance.UnRegisterGetInfoEvent();
 
@@ -64,7 +62,7 @@ public class WorldController : MonoBehaviour
             {
                 //if UnitType is not None we need t UnRegister get info on click events 
                 //and register PlaceUnitEvent
-                BuildController.Instance.RegisterPlaceUnitEvent();
+                BuildController.instance.RegisterPlaceUnitEvent();
                 SelectedUnitForPlacing = Factory.GetFactoryOfType<ProductFactory>().Create(unitType);
                 //we changed the world we added some new unwalkable places so update tile graphs
                 World.ReCalculatePaths();
@@ -83,7 +81,7 @@ public class WorldController : MonoBehaviour
     {
         _currentHoveredTile = World.GetTileAt(_worldInput.MouseX, _worldInput.MouseY);
 
-        if (_worldInput.IsLeftClicked == true)
+        if (_worldInput.IsLeftClicked)
         {
             //this means we are trying to place a building.
             if (SelectedUnitForPlacing != null && _canPlaceUnit != null && _canPlaceUnit == true)
@@ -99,7 +97,7 @@ public class WorldController : MonoBehaviour
             }
         }
         //if player right clicks and the selected unit is a moveable unit then set a destination for that unit
-        if (_worldInput.IsRightClicked == true)
+        if (_worldInput.IsRightClicked)
         {
             if (SelectedTileForInfo?.PlacedUnit is MoveableUnitBase moveable)
             {

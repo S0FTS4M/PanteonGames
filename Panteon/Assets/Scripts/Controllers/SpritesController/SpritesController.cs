@@ -1,24 +1,23 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
 
 public class SpritesController : MonoBehaviour
 {
-    public static SpritesController Instance;
+    public static SpritesController instance;
 
     Dictionary<string, Sprite> _nameToSpritesMap;
 
     // Start is called before the first frame update
     void OnEnable()
     {
-        if (Instance != null)
+        if (instance != null)
         {
             Destroy(gameObject);
             return;
         }
 
-        Instance = this;
+        instance = this;
         _nameToSpritesMap = new Dictionary<string, Sprite>();
         LoadSprites();
     }
@@ -28,22 +27,17 @@ public class SpritesController : MonoBehaviour
         SpriteAtlas spriteAtlas = Resources.Load<SpriteAtlas>("Sprites/Sprites");
         Sprite[] sprites = new Sprite[spriteAtlas.spriteCount];
         spriteAtlas.GetSprites(sprites);
-        for (int i = 0; i < sprites.Length; i++)
+
+        foreach (var sprite in sprites)
         {
-
             _nameToSpritesMap.Add(
-                sprites[i].name.Replace("(Clone)", ""),
-                sprites[i]);
-
+                sprite.name.Replace("(Clone)", ""),
+                sprite);
         }
     }
 
     public Sprite GetSpriteByName(string spriteName)
     {
-        if (_nameToSpritesMap.ContainsKey(spriteName))
-            return _nameToSpritesMap[spriteName];
-
-
-        return null;
+        return _nameToSpritesMap.ContainsKey(spriteName) ? _nameToSpritesMap[spriteName] : null;
     }
 }

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using Assets.Scripts.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Assets.Scripts.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.U2D;
 using UnityEngine.UI;
 
 public class ProductsMenuUIController : MonoBehaviour
@@ -20,7 +18,7 @@ public class ProductsMenuUIController : MonoBehaviour
     //this maps the name of the producible objects to image name and type of the object 
     private Dictionary<string, UnitBase> _nameToObjectForButtons;
 
-    private int _defaultButtonCount = 0;
+    private int _defaultButtonCount;
     // Start is called before the first frame update
     void Awake()
     {
@@ -70,7 +68,7 @@ public class ProductsMenuUIController : MonoBehaviour
                 {
                     int k = i;
                     AddButtonToProductionMenu(producible, () =>
-                      { WorldController.Instance.CreateMoveable(k); });
+                      { WorldController.instance.CreateMoveable(k); });
                     i++;
                 }
             }
@@ -90,11 +88,9 @@ public class ProductsMenuUIController : MonoBehaviour
         foreach (var nameToObjectForButton in _nameToObjectForButtons)
         {
             AddButtonToProductionMenu(nameToObjectForButton.Value, () =>
-                { WorldController.Instance.SetPlaceableUnit(nameToObjectForButton.Value.Type); });
+                { WorldController.instance.SetPlaceableUnit(nameToObjectForButton.Value.Type); });
             _defaultButtonCount++;
         }
-        // LayoutRebuilder.ForceRebuildLayoutImmediate(_contentTransform as RectTransform);
-
     }
 
     void AddButtonToProductionMenu(UnitBase unit, UnityAction function)
@@ -104,7 +100,7 @@ public class ProductsMenuUIController : MonoBehaviour
         spawned.transform.localScale = new Vector3(1, 1, 1);
         spawned.GetComponentInChildren<TextMeshProUGUI>().text = unit.Name;
 
-        spawned.GetComponent<Image>().sprite = SpritesController.Instance.GetSpriteByName(unit.ImageName);
+        spawned.GetComponent<Image>().sprite = SpritesController.instance.GetSpriteByName(unit.ImageName);
 
         Button btn = spawned.GetComponent<Button>();
         btn.onClick.RemoveAllListeners();

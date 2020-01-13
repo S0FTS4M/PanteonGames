@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Interfaces;
+﻿using Assets.Scripts.Interfaces;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,7 +11,7 @@ public class WorldInputController : MonoBehaviour, IWorldInput
     public bool IsLeftClicked { get; private set; }
     public bool IsRightClicked { get; private set; }
 
-    private bool _isDragging = false;
+    private bool _isDragging;
     //mouse position when the player right clicks
     private Vector2 _firstMousePos;
     //mouse position while dragging
