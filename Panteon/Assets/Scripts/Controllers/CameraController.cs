@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     void Start()
     {
         //Reposition the camera right in to the middle of the world
-        World world = FindObjectOfType<WorldController>().World;
+        World world = WorldController.Instance.World;
         int x = world.Width / 2;
         int y = world.Height / 2;
 

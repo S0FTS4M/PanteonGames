@@ -6,36 +6,19 @@ using UnityEngine;
 
 public class WorldController : MonoBehaviour
 {
-    /// <summary>
-    /// when a tile gameobject gets created we want to set a sprite to it. we notify the class
-    /// that responsible for sprites
-    /// </summary>
-    public static event Action<Tile> OnTileGoCreated;
-    /// <summary>
-    /// this will be working only when ever user wants to put a building to the map.
-    /// this will show if it is possible to put buildings to a range of tiles
-    /// </summary>
-    public static event Func<Tile, bool> OnHoverTile;
-    public static event Action<Tile> OnTileClicked;
-
     public static WorldController Instance;
-    [SerializeField]
-    public ProducibleType producibleType;
+    public List<MoveableUnitBase> moveables;
+    public UnitBase SelectedUnitForPlacing { get; private set; }
+    public Tile SelectedTileForInfo { get; private set; }
 
-    public IProducible selectedProducible { get; private set; }
-    bool? _canPlaceBuilding;
+    bool? _canPlaceUnit;
     IWorldInput _worldInput;
-
-    [SerializeField]
-    Transform worldParent;
 
     public Dictionary<Tile, GameObject> TileToGoMap { get; private set; }
     public World World { get; private set; }
 
-    Tile _currentTile;
-
-
-    void Start()
+    Tile _currentHoveredTile;
+    void Awake()
     {
         if (Instance != null)
         {
@@ -43,188 +26,96 @@ public class WorldController : MonoBehaviour
             return;
         }
         Instance = this;
-        World = new World();
+
         TileToGoMap = new Dictionary<Tile, GameObject>();
+        moveables = new List<MoveableUnitBase>();
         //create a gameobject for every tile data and set the position.
-        for (var x = 0; x < World.Width; x++)
-        {
-            for (var y = 0; y < World.Height; y++)
-            {
-                var tile = World.GetTileAt(x, y);
-                var tileGo = new GameObject($"tile_{x}_{y}");
-                tileGo.transform.SetParent(worldParent, true);
-                tileGo.transform.position = new Vector3(x, y, 0);
 
-                TileToGoMap.Add(tile, tileGo);
-
-                OnTileGoCreated?.Invoke(tile);
-            }
-
-        }
         _worldInput = GetComponent<IWorldInput>();
-        SetProducible(ProducibleType.None);
     }
 
-
-
-    public void SetProducible(ProducibleType producibleType)
+    void Start()
     {
-        ///TODO : Bu selectedbuildable konusunda tekrar düşünmem lazım product menuden sadece building bilgisi gönderilmeyecek
-        /// aynı zamanda pruducible bilgisi de gelecek
-
-        if (producibleType == ProducibleType.None)
+        World = new World();
+        SetPlaceableUnit(UnitType.None);
+    }
+    public void CreateMoveable(int index)
+    {
+        //this method will be called only when a tile selected and it has a producer unit on it
+        MoveableUnitBase unit = (MoveableUnitBase)(((IProducer)SelectedTileForInfo.PlacedUnit).Produce(index));
+        moveables.Add(unit);
+    }
+    /// <summary>
+    /// we set the SelectedUnitForPlacing based on unit type and creates a unit from factory
+    /// </summary>
+    /// <param name="unitType">Type of the unit</param>
+    public void SetPlaceableUnit(UnitType unitType)
+    {
+        //we do things if unitType is different. If player spams same type, we do nothing
+        if (SelectedUnitForPlacing?.Type != unitType)
         {
-            BuildController.Instance.UnRegisterPlaceProducibleEvent();
-            InformationUIController.Instance.RegisterGetInfoEvent();
-            ProductsMenuUIController.Instance.RegisterGetInfoEvent();
-            selectedProducible = null;
-            return;
-        }
-        BuildController.Instance.RegisterPlaceProducibleEvent();
-        InformationUIController.Instance.UnRegisterGetInfoEvent();
-        ProductsMenuUIController.Instance.UnRegisterGetInfoEvent();
-        selectedProducible = Factory.GetFactoryOfType<ProductFactory>().Create(producibleType);
+            //Unregister all events so we dont need to consider every time what to unregister
+            //and what to register
+            BuildController.Instance.UnRegisterPlaceUnitEvent();
+            InformationUIController.Instance.UnRegisterGetInfoEvent();
+            ProductsMenuUIController.Instance.UnRegisterGetInfoEvent();
 
+            if (unitType != UnitType.None)
+            {
+                //if UnitType is not None we need t UnRegister get info on click events 
+                //and register PlaceUnitEvent
+                BuildController.Instance.RegisterPlaceUnitEvent();
+                SelectedUnitForPlacing = Factory.GetFactoryOfType<ProductFactory>().Create(unitType);
+                //we changed the world we added some new unwalkable places so update tile graphs
+                World.ReCalculatePaths();
+            }
+            else
+            {
+                //if UnitType is None then we register get info events
+                InformationUIController.Instance.RegisterGetInfoEvent();
+                ProductsMenuUIController.Instance.RegisterGetInfoEvent();
+                SelectedUnitForPlacing = null;
+            }
+        }
     }
     // Update is called once per frame
     void Update()
     {
-        // Debug.Log($"{worldInput.MouseX}, {worldInput.MouseY}");
-        _currentTile = World.GetTileAt(_worldInput.MouseX, _worldInput.MouseY);
+        _currentHoveredTile = World.GetTileAt(_worldInput.MouseX, _worldInput.MouseY);
 
-        if (_worldInput.IsClicked == true)
+        if (_worldInput.IsLeftClicked == true)
         {
             //this means we are trying to place a building.
-            if (selectedProducible != null && _canPlaceBuilding != null && _canPlaceBuilding == true)
+            if (SelectedUnitForPlacing != null && _canPlaceUnit != null && _canPlaceUnit == true)
             {
-                OnTileClicked?.Invoke(_currentTile);
-                SetProducible(ProducibleType.None);
+                _currentHoveredTile?.TileClick();
+                SetPlaceableUnit(UnitType.None);
             }
-            else if (selectedProducible == null)
+            else if (SelectedUnitForPlacing == null)
             {
-                //otherwise (selectedProducible == null) we are getting info
-                OnTileClicked?.Invoke(_currentTile);
+                //otherwise (SelectedUnitForPlacing == null) we are getting info
+                _currentHoveredTile?.TileClick();
+                SelectedTileForInfo = _currentHoveredTile;
             }
-
-
         }
-        if (selectedProducible != null)
-            _canPlaceBuilding = OnHoverTile?.Invoke(_currentTile);
-    }
-    #region TileFuncs
-    /// <summary>
-    /// Yerleştirilebilir nesneler için alan seçiminde üzerinde bulunduğumuz tile base alınarak
-    /// x sınırlarını belirler
-    /// TODO : bu çok anlaşılır değil gibi daha iyi açıklama ve metod ismi bulmak lazım
-    /// </summary>
-    /// <param name="xStart"> Üzerinde bulunduğumuz tile.X bilgisi </param>
-    /// <param name="yStart"> Üzerinde bulunduğumuz tile.Y bilgisi </param>
-    /// <param name="xLength"> Seçtiğimiz yerleştirilebilir nesnenin X uzunluğu</param>
-    /// <returns></returns>
-    public Border CalculateXBorders(int xStart, int yStart, int xLength)
-    {
-        //X ekseninde başlangıç ve bitiş noktasını hesaplayacağımız için bu değişkenleri tanımlıyoruz ve
-        //başlangıç ve bitiş olarak üzerinde bulunduğumuz tile bilgilerini veriyoruz
-        int startX = xStart, endX = xStart;
-        //Her iterasyonda bulunduğumuz tiledan radius kadar uzaklığa bakıyoruz. 
-        int radius = 1;
-
-
-        Tile tile = null;
-
-        for (int x = 1; x < xLength;)
+        //if player right clicks and the selected unit is a moveable unit then set a destination for that unit
+        if (_worldInput.IsRightClicked == true)
         {
-            //pozitif yön kontrolü
-            tile = WorldController.Instance.World.GetTileAt(xStart + radius, yStart);
-            if (tile != null)
+            if (SelectedTileForInfo?.PlacedUnit is MoveableUnitBase moveable)
             {
-                endX = xStart + radius;
-                x++;
-                //x arttıktan sonra ulaşmakistediğimiz uzunluğu kontrol ediyoruz.
-                //kontrollü artırım yapıyoruz
-                if (x >= xLength)
-                    continue;
 
+                moveable.SetDestination(_currentHoveredTile);
+                SelectedTileForInfo = _currentHoveredTile;
             }
-
-            tile = WorldController.Instance.World.GetTileAt(xStart - radius, yStart);
-            if (tile != null)
-            {
-                startX = xStart - radius;
-                x++;
-            }
-
-            radius++;
-
         }
-        return new Border() { start = startX, end = endX };
-    }
-    /// <summary>
-    /// Yerleştirilebilir nesneler için alan seçiminde üzerinde bulunduğumuz tile base alınarak
-    /// y sınırlarını belirler
-    /// TODO : bu çok anlaşılır değil gibi daha iyi açıklama ve metod ismi bulmak lazım
-    /// </summary>
-    /// <param name="xStart"> Üzerinde bulunduğumuz tile.X bilgisi </param>
-    /// <param name="yStart"> Üzerinde bulunduğumuz tile.Y bilgisi </param>
-    /// <param name="yLength"> Seçtiğimiz yerleştirilebilir nesnenin Y uzunluğu</param>
-    /// <returns></returns>
-    public Border CalculateYBorders(int xStart, int yStart, int yLength)
-    {
-        //Y ekseninde başlangıç ve bitiş noktasını hesaplayacağımız için bu değişkenleri tanımlıyoruz ve
-        //başlangıç ve bitiş olarak üzerinde bulunduğumuz tile bilgilerini veriyoruz
-        int startY = yStart, endY = yStart;
-        //Her iterasyonda bulunduğumuz tiledan radius kadar uzaklığa bakıyoruz. 
-        int radius = 1;
 
-        Tile tile = null;
+        if (SelectedUnitForPlacing != null)
+            _canPlaceUnit = _currentHoveredTile?.TileHover();
 
-        for (int y = 1; y < yLength;)
+        foreach (var moveable in moveables)
         {
-
-            //pozitif yön kontrolü
-            tile = WorldController.Instance.World.GetTileAt(xStart, yStart + radius);
-            if (tile != null)
-            {
-                endY = yStart + radius;
-                //eğer uygun alan var ise Y uzunluğumuz arttı
-                y++;
-
-                //y arttıktan sonra ulaşmakistediğimiz uzunluğu kontrol ediyoruz.
-                //kontrollü artırım yapıyoruz
-                if (y >= yLength)
-                    continue;
-
-            }
-
-            //negatif yön kontrolü
-            tile = WorldController.Instance.World.GetTileAt(xStart, yStart - radius);
-            if (tile != null)
-            {
-                startY = yStart - radius;
-                y++;
-
-
-            }
-
-            radius++;
-
+            moveable.Update(Time.deltaTime);
         }
-        return new Border() { start = startY, end = endY };
     }
 
-    public List<Tile> GetTilesInSelectedArea(Border xBorder, Border yBorder)
-    {
-        List<Tile> tilesAvaliable = new List<Tile>();
-        for (int x = xBorder.start; x <= xBorder.end; x++)
-        {
-            for (int y = yBorder.start; y <= yBorder.end; y++)
-            {
-                Tile currentTile = WorldController.Instance.World.GetTileAt(x, y);
-                tilesAvaliable.Add(currentTile);
-            }
-        }
-
-        return tilesAvaliable;
-    }
-    #endregion
 }

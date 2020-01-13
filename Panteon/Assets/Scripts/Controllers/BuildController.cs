@@ -8,15 +8,8 @@ using UnityEngine;
 public class BuildController : MonoBehaviour
 {
     public static BuildController Instance;
-    public static event Action<IProducible, object> OnProducibleGOCreated = delegate { };
-
-    [SerializeField]
-    private Transform buildingsParent;
-    public ProducibleType SelectedProducibleType { get; set; } = ProducibleType.None;
-
-
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         if (Instance != null)
         {
@@ -26,38 +19,36 @@ public class BuildController : MonoBehaviour
 
         Instance = this;
 
-
     }
 
-    public void RegisterPlaceProducibleEvent()
+    public void RegisterPlaceUnitEvent()
     {
-        WorldController.OnTileClicked += PlaceProducible_OnTileClicked;
+        Tile.OnTileClicked += PlaceProducible_OnTileClicked;
 
     }
-    public void UnRegisterPlaceProducibleEvent()
+    public void UnRegisterPlaceUnitEvent()
     {
-        WorldController.OnTileClicked -= PlaceProducible_OnTileClicked;
+        Tile.OnTileClicked -= PlaceProducible_OnTileClicked;
 
     }
-
+    //When ever player activates place unit action we need to start listening for click events on valid tiles
     private void PlaceProducible_OnTileClicked(Tile tile)
     {
-        IProducible producible = WorldController.Instance.selectedProducible;
-        Border xBorders = WorldController.Instance.CalculateXBorders(tile.X, tile.Y, producible.XDimension);
-        Border yBorders = WorldController.Instance.CalculateYBorders(tile.X, tile.Y, producible.YDimension);
-        for (int x = xBorders.start; x <= xBorders.end; x++)
-        {
-            for (int y = yBorders.start; y <= yBorders.end; y++)
-            {
-                Tile currentTile = WorldController.Instance.World.GetTileAt(x, y);
-                currentTile.PlacedUnit = producible;
-            }
-        }
-        GameObject producibleGo = new GameObject(producible.Name);
-        producibleGo.transform.SetParent(buildingsParent);
-        producibleGo.transform.position = new Vector3(xBorders.start, yBorders.start, 0);
+        World world = WorldController.Instance.World;
+        StaticUnitBase staticUnitBase = (StaticUnitBase)WorldController.Instance.SelectedUnitForPlacing;
 
-        OnProducibleGOCreated?.Invoke(producible, producibleGo);
+        Border xBorders = world.CalculateXBorders(tile, staticUnitBase.XDimension);
+        Border yBorders = world.CalculateYBorders(tile, staticUnitBase.YDimension);
+
+        staticUnitBase.PivotTile = WorldController.Instance.World.GetTileAt(xBorders.start, yBorders.start);
+
+        staticUnitBase.PlaceUnit(world);
+
+        //after we set the unitBase we check if this unitBase can produce other units if it so then select a spawn point for it
+        if (staticUnitBase is IProducer producer)
+        {
+            producer.SelectSpawnPoint(xBorders, yBorders);
+        }
 
     }
 

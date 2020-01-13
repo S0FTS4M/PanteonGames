@@ -4,7 +4,8 @@
     {
         int MouseX { get; }
         int MouseY { get; }
-        bool IsClicked { get; }
+        bool IsLeftClicked { get; }
+        bool IsRightClicked { get; }
 
 
 

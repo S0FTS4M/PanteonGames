@@ -2,6 +2,6 @@
 {
     public interface IFactory
     {
-        IBuildable Create(ProducibleType producibleType);
+        UnitBase Create(UnitType unitType);
     }
 }

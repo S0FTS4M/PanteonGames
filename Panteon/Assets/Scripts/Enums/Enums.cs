@@ -2,5 +2,5 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ProducibleType : int
-{ None = -1, Barrack = 0, PowerPlant = 1, Soldier = 2 }
+public enum UnitType : int
+{ None = -1, MoveableUnit = 0, Barrack, PowerPlant, Camp }
