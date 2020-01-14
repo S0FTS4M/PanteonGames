@@ -862,7 +862,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ce82f4f3ab20d4698ade1061e4408c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridParent: {fileID: 614119334}
+  _gridParent: {fileID: 614119334}
 --- !u!114 &1024489748
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,7 +875,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13d3327e1cbe87449afe8a00197c1c43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buildingsParent: {fileID: 677738561}
+  _buildingsParent: {fileID: 677738561}
 --- !u!114 &1024489749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1687,7 +1687,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0000010102863, y: 0.000043172804}
+  m_AnchoredPosition: {x: -0.0000010102863, y: 0.00007054422}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1916632721

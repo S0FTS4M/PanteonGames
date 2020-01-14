@@ -31,11 +31,16 @@ public class ProductsMenuUIController : MonoBehaviour
         Instance = this;
         _nameToObjectForButtons = new Dictionary<string, UnitBase>();
         //find every object inherited from StaticUnitBase and get the desired info from this types
-        foreach (Type type in
-            Assembly.GetAssembly(typeof(StaticUnitBase)).GetTypes()
-                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(StaticUnitBase))))
+        var createableTypes = Assembly.GetAssembly(typeof(StaticUnitBase)).GetTypes()
+            .Where(
+                myType =>
+                    myType.IsClass &&
+                    !myType.IsAbstract &&
+                    myType.IsSubclassOf(
+                        typeof(StaticUnitBase)));
+        foreach (var type in createableTypes)
         {
-            StaticUnitBase unit = (StaticUnitBase)Activator.CreateInstance(type);
+            var unit = (StaticUnitBase)Activator.CreateInstance(type);
             _nameToObjectForButtons.Add(unit.Name,
                 unit);
 
@@ -58,29 +63,31 @@ public class ProductsMenuUIController : MonoBehaviour
     private void GetInfo_OnTileClicked(Tile tile)
     {
         ClearProductsMenu();
-        if (tile?.PlacedUnit != null)
-        {
-            if (tile.PlacedUnit is IProducer producer)
-            {
+        //if tile has no unit on it then return
+        if (tile?.PlacedUnit == null) return;
+        //if tile has unit and this unit is not a producer than return
+        if (!(tile.PlacedUnit is IProducer producer)) return;
 
-                int i = 0;
-                foreach (var producible in producer.MoveableUnitPrototypes)
-                {
-                    int k = i;
-                    AddButtonToProductionMenu(producible, () =>
-                      { WorldController.instance.CreateMoveable(k); });
-                    i++;
-                }
-            }
+        //if unit is a producer then create buttons for this unit
+        var i = 0;
+        foreach (var producible in producer.MoveableUnitPrototypes)
+        {
+            var k = i;
+
+            AddButtonToProductionMenu(producible, () =>
+                { WorldController.instance.CreateMoveable(k); });
+            i++;
         }
 
     }
 
     public void ClearProductsMenu()
     {
-        for (int i = _defaultButtonCount; i < _contentTransform.childCount; i++)
+        for (var i = _defaultButtonCount; i < _contentTransform.childCount; i++)
         {
-            SimplePool.Despawn(_contentTransform.GetChild(i).gameObject);
+            if (_contentTransform.GetChild(i).gameObject.activeSelf)
+                SimplePool.Despawn(_contentTransform.GetChild(i).gameObject);
+
         }
     }
     public void CreateDefaultProductsPanel()
@@ -95,17 +102,17 @@ public class ProductsMenuUIController : MonoBehaviour
 
     void AddButtonToProductionMenu(UnitBase unit, UnityAction function)
     {
-        GameObject spawned = SimplePool.Spawn(_buttonPrefab, Vector3.zero, Quaternion.identity);
+        var spawned = SimplePool.Spawn(_buttonPrefab, Vector3.zero, Quaternion.identity);
+
         spawned.transform.SetParent(_contentTransform);
         spawned.transform.localScale = new Vector3(1, 1, 1);
         spawned.GetComponentInChildren<TextMeshProUGUI>().text = unit.Name;
 
-        spawned.GetComponent<Image>().sprite = SpritesController.instance.GetSpriteByName(unit.ImageName);
-
-        Button btn = spawned.GetComponent<Button>();
+        var btn = spawned.GetComponent<Button>();
         btn.onClick.RemoveAllListeners();
 
         //assign names colors and click events to the UI elements
+        spawned.GetComponent<Image>().sprite = SpritesController.instance.GetSpriteByName(unit.ImageName);
         btn.onClick.AddListener(function);
     }
 }

@@ -1,6 +1,12 @@
 ﻿
-///
-/// Simple pooling for Unity.
+
+
+
+
+using UnityEngine;
+using System.Collections.Generic;
+/// <summary>
+///  Simple pooling for Unity.
 ///   Author: Martin "quill18" Glaude (quill18@quill18.com)
 ///   Latest Version: https://gist.github.com/quill18/5a7cfffae68892621267
 ///   License: CC0 (http://creativecommons.org/publicdomain/zero/1.0/)
@@ -15,30 +21,23 @@
 ///       SimplePool.Spawn(somePrefab, somePosition, someRotation);
 /// 
 ///   Instead of destroying an object, use this:
-///       SimplePool.Despawn(myGameObject);
+///       SimplePool.DeSpawn(myGameObject);
 /// 
-///   If desired, you can preload the pool with a number of instances:
-///       SimplePool.Preload(somePrefab, 20);
+///   If desired, you can pre load the pool with a number of instances:
+///       SimplePool.PreLoad(somePrefab, 20);
 /// 
 /// Remember that Awake and Start will only ever be called on the first instantiation
 /// and that member variables won't be reset automatically.  You should reset your
 /// object yourself after calling Spawn().  (i.e. You'll have to do things like set
 /// the object's HPs to max, reset animation states, etc...)
-/// 
-/// 
-/// 
-
-
-using UnityEngine;
-using System.Collections.Generic;
-
+/// </summary>
 public static class SimplePool
 {
 
     // You can avoid resizing of the Stack's internal data by
     // setting this to a number equal to or greater to what you
     // expect most of your pool sizes to be.
-    // Note, you can also use Preload() to set the initial size
+    // Note, you can also use PreLoad() to set the initial size
     // of a pool -- this can be handy if only some of your pools
     // are going to be exceptionally large (for example, your bullets.)
     private const int DefaultPoolSıze = 3;
@@ -81,7 +80,7 @@ public static class SimplePool
             {
                 // We don't have an object in our pool, so we
                 // instantiate a whole new object.
-                obj = (GameObject)GameObject.Instantiate(_prefab, pos, rot);
+                obj = Object.Instantiate(_prefab, pos, rot);
                 obj.name = _prefab.name + " (" + (_nextId++) + ")";
 
                 // Add a PoolMember component so we know what pool
@@ -206,7 +205,7 @@ public static class SimplePool
         if (pm == null)
         {
             Debug.Log("Object '" + obj.name + "' wasn't spawned from a pool. Destroying it instead.");
-            GameObject.Destroy(obj);
+            Object.Destroy(obj);
         }
         else
         {

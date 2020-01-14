@@ -21,7 +21,6 @@ public class InformationUIController : MonoBehaviour
             return;
         }
 
-
         Instance = this;
     }
     public void RegisterGetInfoEvent()
@@ -40,7 +39,8 @@ public class InformationUIController : MonoBehaviour
 
         for (int i = 0; i < produciblesTransform.childCount; i++)
         {
-            SimplePool.Despawn(produciblesTransform.GetChild(i).gameObject);
+            if (produciblesTransform.GetChild(i).gameObject.activeSelf)
+                SimplePool.Despawn(produciblesTransform.GetChild(i).gameObject);
         }
 
         if (tile?.PlacedUnit != null)
@@ -59,7 +59,6 @@ public class InformationUIController : MonoBehaviour
                     ProducibleUnitPanel.GetComponentInChildren<TextMeshProUGUI>().text = producible.Name;
                     GameObject spawn = SimplePool.Spawn(_producibleGO, Vector3.zero, Quaternion.identity);
                     spawn.transform.SetParent(produciblesTransform);
-
                     spawn.transform.localScale = new Vector3(1, 1, 1);
 
                     spawn.GetComponent<Image>().sprite = SpritesController.instance.GetSpriteByName(producible.ImageName);
